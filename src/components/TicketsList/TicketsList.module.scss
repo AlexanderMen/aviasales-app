@@ -1,0 +1,23 @@
+.no-filters-checked {
+	font: normal 600 15px 'Open Sans', sans-serif;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	margin: 30px 5px 5px;
+}
+
+.tickets-list__btn-container {
+	display: flex;
+	height: 50px;
+	margin-bottom: 50px;
+}
+
+.tickets-list__btn {
+	flex-grow: 1;
+	cursor: pointer;
+	background: #2196F3;
+	border-radius: 5px;
+	font: normal 600 12px 'Open Sans', sans-serif;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	color: #FFFFFF;
+}

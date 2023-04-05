@@ -1,0 +1,40 @@
+.ticket {
+	box-sizing: border-box;
+	margin: 20px 0;
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+	font: normal 600 12px 'Open Sans', sans-serif;
+	color: #4A4A4A;
+	background-color: #FFFFFF;
+	line-height: 21px;
+}
+
+.ticket__header {
+	line-height: 24px;
+	color: #2196F3;
+}
+
+.ticket__header_price {
+	font-size: 24px;
+	line-height: 36px;
+}
+
+.ticket__header_logo {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.ticket_gray-header {
+	line-height: 18px;
+	letter-spacing: 0.5px;
+	color: #A0B0B9;
+}
+
+.ticket__to {
+	margin-top: 20px;
+}
+
+.ticket__back {
+	margin-top: 10px;
+}
