@@ -1,60 +1,69 @@
+import AviasalesService from '../services/AviasalesService';
+
+const aviasalesService = new AviasalesService();
+
+export const CHANGE_SORT_ITEM = 'CHANGE_SORT_ITEM';
+export const CHANGE_FILTER_ITEM = 'CHANGE_FILTER_ITEM';
+export const SHOW_NEXT_5_TICKETS = 'SHOW_NEXT_5_TICKETS';
+export const GET_SEARCH_ID = 'GET_SEARCH_ID';
+export const GET_TICKETS = 'GET_TICKETS';
+export const TICKETS_LOADED = 'TICKETS_LOADED';
+export const SHOW_ERROR_MESSAGE = 'SHOW_ERROR_MESSAGE';
+
 export const changeSortItem = (id) => ({
-	type: 'CHANGE_SORT_ITEM',
+	type: CHANGE_SORT_ITEM,
 	id,
 });
 
 export const changeFilterItem = (id) => ({
-	type: 'CHANGE_FILTER_ITEM',
+	type: CHANGE_FILTER_ITEM,
 	id,
 });
 
-export const showNext5Tickets = () => ({ type: 'SHOW_NEXT_5_TICKETS' });
+export const showNext5Tickets = () => ({ type: SHOW_NEXT_5_TICKETS });
 
 const getSearchId = (searchId) => ({
-	type: 'GET_SEARCH_ID',
+	type: GET_SEARCH_ID,
 	searchId,
 });
 
 const getTickets = (tickets) => ({
-	type: 'GET_TICKETS',
+	type: GET_TICKETS,
 	tickets,
 });
 
 const isTicketsLoaded = (ticketsLoaded) => ({
-	type: 'TICKETS_LOADED',
+	type: TICKETS_LOADED,
 	ticketsLoaded,
 });
 
-const showErrorMessage = () => ({ type: 'SHOW_ERROR_MESSAGE' });
+const showErrorMessage = () => ({ type: SHOW_ERROR_MESSAGE });
 
-export const fetchSearchId = () => async (dispatch) => {
-	try {
-		const response = await fetch('https://aviasales-test-api.kata.academy/search');
-		const json = await response.json();
-		return dispatch(getSearchId(json.searchId));
-	} catch (err) {
-		dispatch(showErrorMessage());
-	}
-};
+export const fetchSearchId = () => (dispatch) =>
+	aviasalesService.fetchingSearchId(dispatch, getSearchId, showErrorMessage);
 
-export const fetchTickets = () => async (dispatch, getState) => {
-	try {
-		const searchId = getState().searchId;
-		const url = `https://aviasales-test-api.kata.academy/tickets?searchId=${searchId}`;
-		let response = await fetch(url);
+export const fetchTickets = () => (dispatch, getState) =>
+	aviasalesService.fetchingTickets(dispatch, getState, isTicketsLoaded, getTickets, showErrorMessage, fetchTickets);
 
-		while (response.status === 500) response = await fetch(url);
-
-		const json = await response.json();
-		if (json.stop) {
-			console.log('stop: true');
-			return dispatch(isTicketsLoaded(true));
-		}
-		dispatch(getTickets(json.tickets));
-		return dispatch(fetchTickets());
-	} catch (err) {
-		dispatch(showErrorMessage());
-	}
-};
-
-export const filtersId = ['all', '0', '1', '2', '3'];
+export const filtersId = [
+	{
+		name: 'Все',
+		id: 'all',
+	},
+	{
+		name: 'Без пересадок',
+		id: '0 stops',
+	},
+	{
+		name: '1 пересадка',
+		id: '1 stop',
+	},
+	{
+		name: '2 пересадки',
+		id: '2 stops',
+	},
+	{
+		name: '3 пересадки',
+		id: '3 stops',
+	},
+];

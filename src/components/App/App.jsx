@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Spin } from 'antd';
 
+import { fetchSearchId, fetchTickets } from '../../actions';
 import ErrorMessage from '../ErrorMessage';
 import Filters from '../Filters';
 import Sort from '../Sort';
@@ -9,7 +10,9 @@ import TicketsList from '../TicketsList';
 
 import classes from './App.module.scss';
 
-const App = ({ isErrorMessage, ticketsLoaded }) => {
+const App = ({ isErrorMessage, ticketsLoaded, fetchSearchId, fetchTickets }) => {
+	useEffect(() => () => fetchSearchId().then(() => fetchTickets()), []);
+
 	const err = (
 		<section className={classes.mainWrapper}>
 			<ErrorMessage message="Something goes wrong..." description="Something goes wrong, try again later..." />
@@ -43,4 +46,4 @@ const App = ({ isErrorMessage, ticketsLoaded }) => {
 
 const mapStateToProps = ({ error, ticketsLoaded }) => ({ isErrorMessage: error, ticketsLoaded });
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, { fetchSearchId, fetchTickets })(App);

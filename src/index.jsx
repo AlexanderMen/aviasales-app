@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 
-import { fetchSearchId, fetchTickets } from './actions';
 import reducer from './reducers';
 import App from './components/App';
 
@@ -16,9 +15,6 @@ const composeEnhancers =
 		: compose;
 
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
-const { dispatch } = store;
-
-dispatch(fetchSearchId()).then(() => dispatch(fetchTickets()));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

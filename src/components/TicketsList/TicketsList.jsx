@@ -17,8 +17,8 @@ const TicketsList = ({ tickets, showNext5Tickets }) => {
 		);
 
 	const ticketsList = showingTickets.map((ticket) => {
-		const id = Math.round(Math.random() * 100000 * Math.random() * 100000);
 		const { price, carrier, segments } = ticket;
+		const id = `${price}${carrier}${segments[0].date}`;
 		let ticketPrice = String(price);
 		ticketPrice = `${ticketPrice.slice(0, ticketPrice.length - 3)} ${ticketPrice.slice(ticketPrice.length - 3)} Р`;
 

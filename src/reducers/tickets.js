@@ -1,8 +1,10 @@
-import { filtersId } from '../actions';
+import { filtersId, GET_TICKETS, SHOW_NEXT_5_TICKETS, CHANGE_FILTER_ITEM, CHANGE_SORT_ITEM } from '../actions';
+
+import { getFilteredTickets, getFilteredAndSortedTickets, getShowingTickets, getFilters } from './functionsForRedusers';
 
 const tickets = (
 	state = {
-		filters: ['0', '1', '2'],
+		filters: ['0 stops', '1 stop', '2 stops'],
 		sortID: 1,
 		totalTickets: [],
 		filteredTickets: [],
@@ -12,53 +14,6 @@ const tickets = (
 	},
 	action
 ) => {
-	const getFilteredTickets = (totalTickets, filters) => {
-		if (!filters.length) return [];
-		if (filters.length === 5) return [...totalTickets];
-
-		return totalTickets.filter((ticket) => {
-			return (
-				filters.includes(`${ticket.segments[0].stops.length}`) && filters.includes(`${ticket.segments[1].stops.length}`)
-			);
-		});
-	};
-
-	const getFilteredAndSortedTickets = (filteredTickets, sortID) => {
-		const comparingFn = (a, b, sortID) => {
-			const firstElPrice = a.price;
-			const secondElPrice = b.price;
-			const firstElDuration = a.segments[0].duration + a.segments[1].duration;
-			const secondElDuration = b.segments[0].duration + b.segments[1].duration;
-
-			if (sortID === 1) return firstElPrice - secondElPrice;
-			if (sortID === 2) return firstElDuration - secondElDuration;
-			return firstElPrice * firstElDuration - secondElPrice * secondElDuration;
-		};
-
-		return [...filteredTickets].sort((a, b) => comparingFn(a, b, sortID));
-	};
-
-	const getShowingTickets = (tickets, showingTickets, ticketsNumber, next5Tickets) => {
-		if (ticketsNumber === 5) return tickets.slice(0, 5);
-		if (!next5Tickets) return tickets.slice(0, showingTickets.length);
-
-		return [...showingTickets, ...tickets.slice(showingTickets.length, showingTickets.length + 5)];
-	};
-
-	const getFilters = (filters, id, filtersId) => {
-		let itemsId = [...filters];
-		const stateHasAllItemsId = itemsId.length === 5;
-
-		if (id === 'all') return stateHasAllItemsId ? [] : [...filtersId];
-
-		if (stateHasAllItemsId) return itemsId.filter((item) => item !== 'all' && item !== id);
-
-		if (itemsId.includes(id)) return itemsId.filter((item) => item !== id);
-
-		itemsId.push(id);
-		return itemsId.length === 4 ? [...filtersId] : itemsId;
-	};
-
 	let {
 		filters,
 		sortID,
@@ -68,15 +23,14 @@ const tickets = (
 		showingTickets,
 		showingTicketsNumber,
 	} = state;
-	let newShowingTickets;
 
 	switch (action.type) {
-		case 'GET_TICKETS': {
+		case GET_TICKETS: {
 			const newTotalTickets = [...totalTickets, ...action.tickets];
 			const newFilteredTickets = getFilteredTickets(newTotalTickets, filters);
 			const newFilteredAndSortedTickets = getFilteredAndSortedTickets(newFilteredTickets, sortID);
 
-			newShowingTickets = getShowingTickets(newFilteredAndSortedTickets, showingTickets, showingTicketsNumber);
+			const newShowingTickets = getShowingTickets(newFilteredAndSortedTickets, showingTickets, showingTicketsNumber);
 
 			return {
 				filters: [...filters],
@@ -88,9 +42,14 @@ const tickets = (
 				showingTicketsNumber,
 			};
 		}
-		case 'SHOW_NEXT_5_TICKETS': {
+		case SHOW_NEXT_5_TICKETS: {
 			const newShowingTicketsNumber = showingTicketsNumber + 5;
-			newShowingTickets = getShowingTickets(filteredAndSortedTickets, showingTickets, newShowingTicketsNumber, true);
+			const newShowingTickets = getShowingTickets(
+				filteredAndSortedTickets,
+				showingTickets,
+				newShowingTicketsNumber,
+				true
+			);
 
 			return {
 				filters: [...filters],
@@ -102,7 +61,7 @@ const tickets = (
 				showingTicketsNumber: newShowingTicketsNumber,
 			};
 		}
-		case 'CHANGE_FILTER_ITEM': {
+		case CHANGE_FILTER_ITEM: {
 			let newState = { ...state };
 			const { id } = action;
 			newState.filters = getFilters(filters, id, filtersId);
@@ -120,7 +79,7 @@ const tickets = (
 
 			return newState;
 		}
-		case 'CHANGE_SORT_ITEM':
+		case CHANGE_SORT_ITEM:
 			filteredAndSortedTickets = getFilteredAndSortedTickets(filteredTickets, action.id);
 
 			showingTickets = getShowingTickets(filteredAndSortedTickets, showingTickets, showingTicketsNumber);
